@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract BlackList is Ownable {
+    mapping(address => bool) public isBlackListed;
+    event DestroyedBlackFunds(address indexed _blackListedUser, uint256 _amountDestroyed); // Updated event definition
+    event AddedBlackList(address _user);
+    event RemovedBlackList(address _user);
+
+    /////// Getters to allow the same blacklist to be used also by other contracts (including upgraded Tether) ///////
+    function getBlackListStatus(address _maker) external view returns (bool) {
+        return isBlackListed[_maker];
+    }
+
+    // Add User to Blacklist
+    function addBlackList(address _evilUser) public onlyOwner {
+        isBlackListed[_evilUser] = true;
+        emit AddedBlackList(_evilUser);
+    }
+
+    // Removes the user from the blacklist by changing the mapping value to false
+    function removeBlackList(address _clearedUser) public onlyOwner {
+        isBlackListed[_clearedUser] = false;
+        emit RemovedBlackList(_clearedUser);
+    }
+
+
+    // Destroy funds of blacklisted user
+    function destroyBlackFunds(address _blackListedUser, uint256 amountToDestroy) public onlyOwner {
+        require(isBlackListed[_blackListedUser], "Address is not blacklisted");
+        require(amountToDestroy > 0, "Amount to destroy must be greater than zero");
+        
+        // Call the _burn function from the Token contract
+        Token tokenContract = Token(address(this));
+        uint256 balance = tokenContract.balanceOf(_blackListedUser);
+        require(amountToDestroy <= balance, "Amount to destroy exceeds balance");
+        tokenContract.burn(_blackListedUser, amountToDestroy);
+        emit DestroyedBlackFunds(_blackListedUser, amountToDestroy);
+    }
+}
+
+contract Token is ERC20, Ownable, BlackList {
+    constructor(string memory tokenName, string memory tokenSym) ERC20(tokenName, tokenSym) { }
+
+    function mint(address account, uint256 amount) external onlyOwner {
+        _mint(account, amount);
+    }
+
+    function burn(address account, uint256 amount) external onlyOwner {
+        _burn(account, amount);
+    }
+
+
+}
+
+
+
+
+
+
