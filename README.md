@@ -1,13 +1,11 @@
 Code has been tested in Remix, since it was at the very beginning of the course.
 
-**Deploye Blacklist contract only (with Wallet 0xfCFcb952d842da5CD965484bD474972e299439b8) :**
+**Deploy Blacklist contract only (with Wallet 0xfCFcb952d842da5CD965484bD474972e299439b8) :**
 https://mumbai.polygonscan.com/tx/0x882bc0a966998b15ee8c12bfce31175047c1abc89228eb12a56224f0455e0e5a
 
 
 
-
-
-**Deploy Token Contract with token TBT**
+**Deploy Token Contract with token TBT - Token contract inherits from Balcklist contract**
 https://mumbai.polygonscan.com/tx/0x70c6f98e17c3624ed265b101bee44185f21a71887c65f23681bfa0fdcb86dbbb
 
 **Mint Tokens to wallet of deployer 0xfCFcb952d842da5CD965484bD474972e299439b8**
